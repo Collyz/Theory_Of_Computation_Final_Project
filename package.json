@@ -1,0 +1,22 @@
+{
+  "name": "theory_of_computation_final_project",
+  "version": "1.0.0",
+  "description": "ToC Final Project, FA drag-and-drop UI",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Collyz/Theory_Of_Computation_Final_Project.git"
+  },
+  "author": "Mohammed Mowla, Parth Patel",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/Collyz/Theory_Of_Computation_Final_Project/issues"
+  },
+  "homepage": "https://github.com/Collyz/Theory_Of_Computation_Final_Project#readme",
+  "dependencies": {
+    "p5": "^1.9.2"
+  }
+}
