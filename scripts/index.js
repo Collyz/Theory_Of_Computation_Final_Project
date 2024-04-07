@@ -20,7 +20,7 @@ const s1 = ( sketch ) => {
         }
         if(sketch.mouseButton === sketch.CENTER){
             for(let i = circles.length - 1; i >= 0; i--){
-                if(dist(sketch.mouseX, sketch.mouseY, circles[i].x, circles[i].y) < circles[i].r){
+                if(sketch.dist(sketch.mouseX, sketch.mouseY, circles[i].x, circles[i].y) < circles[i].r){
                     circles.splice(i, 1);
                     break;
                 }
