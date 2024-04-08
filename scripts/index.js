@@ -160,11 +160,12 @@ class Arrow {
         let t1 = r1/d;
         let t2 = r2/d;
 
-        let x1 = ((1-t1)*circles[this.c1].x) + (t1*circles[this.c2].x);
-        let y1 = ((1-t1)*circles[this.c1].y) + (t1*circles[this.c2].y);
+        let x1 = (1-t1)*circles[this.c1].x + (t1*circles[this.c2].x);
+        let y1 = (1-t1)*circles[this.c1].y + (t1*circles[this.c2].y);
         let x2 = (1-t2)*circles[this.c2].x + (t2*circles[this.c1].x);
         let y2 = (1-t2)*circles[this.c2].y + (t2*circles[this.c1].y);
 
+        // Triangles (Fill in)
         line(x1, y1, x2, y2);
     }
 
