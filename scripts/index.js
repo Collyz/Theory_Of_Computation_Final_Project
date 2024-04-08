@@ -98,19 +98,10 @@ window.addEventListener('keydown', function(e){
 // Draw Lines????
 window.addEventListener("click", function(e){
     if(e.shiftKey){
-        // for(let i = circles.length - 1; i >= 0; i--){
-        //     if(dist(mouseX, mouseY, circles[i].x, circles[i].y) < circles[i].r){
-        //         if(circles[i].color === 'blue'){
-        //             lastBlue = null;
-        //         }
-        //         circles.splice(i, 1);
-        //         break;
-        //     }
-        // }
-        // dragging = false;
         if(lastBlue !== null){
             if(currCirc !== null && prevCirc !== null){
-                lines.push(new Arrow(circles[prevCirc].x, circles[prevCirc].y, circles[currCirc].x, circles[currCirc].y));
+
+                lines.push(new Arrow(prevCirc, currCirc));
             }
         }
     }
@@ -157,14 +148,24 @@ class Circ {
 }
 
 class Arrow {
-    constructor(x1, y1, x2, y2){
-        this.x1 = x1;
-        this.y1 = y1;
-        this.x2 = x2;
-        this.y2 = y2;
+    constructor(c1, c2){
+        this.c1 = c1;
+        this.c2 = c2;
     }
 
     display(){
-        line(this.x1, this.y1, this.x2, this.y2);
+        let d = dist(circles[this.c1].x, circles[this.c1].y, circles[this.c2].x, circles[this.c2].y);
+        let r1 = circles[this.c1].r;
+        let r2 = circles[this.c2].r;
+        let t1 = r1/d;
+        let t2 = r2/d;
+
+        let x1 = ((1-t1)*circles[this.c1].x) + (t1*circles[this.c2].x);
+        let y1 = ((1-t1)*circles[this.c1].y) + (t1*circles[this.c2].y);
+        let x2 = (1-t2)*circles[this.c2].x + (t2*circles[this.c1].x);
+        let y2 = (1-t2)*circles[this.c2].y + (t2*circles[this.c1].y);
+
+        line(x1, y1, x2, y2);
     }
+
 }
