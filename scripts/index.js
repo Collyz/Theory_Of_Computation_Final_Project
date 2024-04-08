@@ -34,9 +34,11 @@ function draw(){
         lines[i].display();
     }
 
+
     // Updating position of selected blue circle when dragging
     if(dragging && lastBlue !== null){
         circles.splice(lastBlue, 1, new Circ(mouseX, mouseY, 'blue'));
+        
     }
 }
 
@@ -70,12 +72,11 @@ function mousePressed(){
         }
     }
     // Dragging check
-    if(lastBlue !== null ** mousePressed == LEFT){
+    if(lastBlue !== null && mouseButton === LEFT){
         if(dist(mouseX, mouseY, circles[lastBlue].x, circles[lastBlue].y) < circles[lastBlue].r){
             dragging = true;
         }
     }
-    console.log(lines.length);
 }
 
 // On mouse released
@@ -106,7 +107,7 @@ window.addEventListener("click", function(e){
         //         break;
         //     }
         // }
-        dragging = false;
+        // dragging = false;
         if(lastBlue !== null){
             if(currCirc !== null && prevCirc !== null){
                 lines.push(new Arrow(circles[prevCirc].x, circles[prevCirc].y, circles[currCirc].x, circles[currCirc].y));
@@ -161,7 +162,6 @@ class Arrow {
         this.y1 = y1;
         this.x2 = x2;
         this.y2 = y2;
-        console.log(this.x1 + " " + this.y1 + " " + this.x2 + " " + this.y2);
     }
 
     display(){
