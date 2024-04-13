@@ -128,7 +128,7 @@ class Circ {
             this.x = x;
             this.y = y;
         }
-        this.d = 30;
+        this.d = 50;
         this.r = this.d/2;
         this.color = color;
     }
@@ -165,8 +165,31 @@ class Arrow {
         let x2 = (1-t2)*circles[this.c2].x + (t2*circles[this.c1].x);
         let y2 = (1-t2)*circles[this.c2].y + (t2*circles[this.c1].y);
 
+        let t3 = 10/dist(x1, y1, x2, y2);
+        let x3 = (1-t3)*x2 + (t3*x1);
+        let y3 = (1-t3)*y2 + (t3*y1);
+
+        let slope = 0;
+        if((x3-x2) == 0){
+            slope = undefined;
+        } else if(y3-y2 == 0){
+            slope = 0;
+        }else{
+            slope = (y3-y2)/(x3-x2);
+        }
+
+        function getY(x, x1, y1, slope){
+            return (slope*(x-x1))+y1;
+        }
+        x4 = 
+        y4 = 
+        x5 = 
+        y5 = 
+
+
         // Triangles (Fill in)
-        line(x1, y1, x2, y2);
+        // line(x1, y1, x2, y2);
+        line(x3, y3, x2, y2);
     }
 
 }
