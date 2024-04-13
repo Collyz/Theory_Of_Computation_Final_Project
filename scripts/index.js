@@ -8,6 +8,8 @@ let selected = null;
 let lastBlue = null;
 // Dragging 
 let dragging = false;
+let offsetX = 0;
+let offsetY = 0;
 // Line Drawing
 let prevCirc = null;
 let currCirc = null;
@@ -37,9 +39,8 @@ function draw(){
 
     // Updating position of selected blue circle when dragging
     if(dragging && lastBlue !== null){
-        
-        circles.splice(lastBlue, 1, new Circ(mouseX, mouseY, 'blue'));
-        
+        circles[lastBlue].x = mouseX - offsetX;
+        circles[lastBlue].y = mouseY - offsetY;
     }
 }
 
@@ -75,6 +76,8 @@ function mousePressed(){
     // Dragging check
     if(lastBlue !== null && mouseButton === LEFT){
         if(dist(mouseX, mouseY, circles[lastBlue].x, circles[lastBlue].y) < circles[lastBlue].r){
+            offsetX = mouseX - circles[lastBlue].x;
+            offsetY = mouseY - circles[lastBlue].y;
             dragging = true;
         }
     }
