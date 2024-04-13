@@ -26,14 +26,20 @@ function draw(){
     clear();
     background(200);
 
+    // REUSING i and lengths
+    let i = 0, lenCir = circles.length, lenLine = lines.length;
+
     // Drawing Circles
-    for(let i = 0; i < circles.length; i++){
+    while(i < lenCir){
         circles[i].display();
+        i++;
     }
 
     // Draw Lines
-    for(let i = 0; i < lines.length; i++){
+    i = 0;
+    while(i < lenLine){
         lines[i].display();
+        i++;
     }
 
 
@@ -53,18 +59,14 @@ function mousePressed(){
             if(lastBlue === null){
                 let tempX = circles[i].x;
                 let tempY = circles[i].y;
-                circles.splice(i, 1, new Circ(tempX, tempY, 'blue'));
+                circles[i].color = 'blue';
                 lastBlue = i;
                 currCirc = i;
             }else{
                 // If there is a previous blue circle, replace the old one 
-                let tempX = circles[lastBlue].x;
-                let tempY = circles[lastBlue].y;
-                circles.splice(lastBlue, 1, new Circ(tempX, tempY, 'None'));
+                circles[lastBlue].color = 'None';
                 // Make the new selected circle blue
-                let tempX2 = circles[i].x;
-                let tempY2 = circles[i].y;
-                circles.splice(i, 1, new Circ(tempX2, tempY2, 'blue'));
+                circles[i].color = 'blue';
                 prevCirc = lastBlue;
                 lastBlue = i;
                 currCirc = i;
@@ -104,7 +106,6 @@ window.addEventListener("click", function(e){
     if(e.shiftKey){
         if(lastBlue !== null){
             if(currCirc !== null && prevCirc !== null){
-
                 lines.push(new Arrow(prevCirc, currCirc));
             }
         }
@@ -116,8 +117,21 @@ window.addEventListener("click", function(e){
 // On Double Click, draw a circle
 
 ondblclick = (event) =>{
-    if(mouseButton === LEFT){
-        circles.push(new Circ(null, null,'None'));
+    let d = 0;
+    // If on top of a blue circle and a blue circle is selected, double click will make it an accept circle (accept state)
+    if(mouseButton === LEFT && lastBlue !== null){
+        d = dist(mouseX, mouseY, circles[lastBlue].x, circles[lastBlue].y);
+        if(d < circles[lastBlue].r){
+            if(circles[lastBlue].acceptState){
+                circles[lastBlue].acceptState = false;
+            }else{
+                circles[lastBlue].acceptState = true;
+            }
+        }else{
+            circles.push(new Circ(null, null, 'None'));
+        }
+    }else{
+        circles.push(new Circ(null, null, 'None'));
     }
 };
 
@@ -135,15 +149,27 @@ class Circ {
         this.d = 50;
         this.r = this.d/2;
         this.color = color;
+        this.acceptState = false;
     }
 
     display(){
-        if(this.color !== 'None'){
-            stroke(this.color)
+        if(!this.acceptState){
+            if(this.color !== 'None'){
+                stroke(this.color)
+            }else{
+                stroke(0);
+            }
+            circle(this.x, this.y, this.r * 2);
         }else{
-            stroke(0);
+            if(this.color !== 'None'){
+                stroke(this.color)
+            }else{
+                stroke(0);
+            }
+            circle(this.x, this.y, this.d);
+            circle(this.x, this.y, this.d-10);
         }
-        circle(this.x, this.y, this.r * 2);
+        
     }
 
     x(){
@@ -158,42 +184,71 @@ class Arrow {
     }
 
     display(){
+
+        // Calculate distances and ratios for offsetting the long line between circles so that they do not overlap with the circle
         let d = dist(circles[this.c1].x, circles[this.c1].y, circles[this.c2].x, circles[this.c2].y);
         let r1 = circles[this.c1].r;
         let r2 = circles[this.c2].r;
         let t1 = r1/d;
         let t2 = r2/d;
 
+        // Calculating start and end points of the original line mentioned above (using those ratios^)
         let x1 = (1-t1)*circles[this.c1].x + (t1*circles[this.c2].x);
         let y1 = (1-t1)*circles[this.c1].y + (t1*circles[this.c2].y);
         let x2 = (1-t2)*circles[this.c2].x + (t2*circles[this.c1].x);
         let y2 = (1-t2)*circles[this.c2].y + (t2*circles[this.c1].y);
 
+        // Calculate point 5 pixels away from end point
         let t3 = 10/dist(x1, y1, x2, y2);
         let x3 = (1-t3)*x2 + (t3*x1);
         let y3 = (1-t3)*y2 + (t3*y1);
 
-        // let slope = 0;
-        // if((x3-x2) == 0){
-        //     slope = undefined;
-        // } else if(y3-y2 == 0){
-        //     slope = 0;
-        // }else{
-        //     slope = (y3-y2)/(x3-x2);
-        // }
+        // Calculate the slope of the original line (big line)
+        let slope = (y2 - y1) / (x2 - x1);
 
-        // function getY(x, x1, y1, slope){
-        //     return (slope*(x-x1))+y1;
-        // }
-        // x4 = 
-        // y4 = 
-        // x5 = 
-        // y5 = 
+        // Calculate slope of the original line
+        let perpSlope, dx, dy;
+        
+        if (slope === Infinity || slope === -Infinity) {
+            // Handle vertical line case
+            perpSlope = 0;
+            dx = 5;
+            dy = 0;
+        } else if (slope === 0) {
+            // Handle horizontal line case
+            perpSlope = Infinity;
+            dx = 0;
+            dy = 5;
+        } else {
+            // Calculate perpendicular slope
+            perpSlope = -1 / slope;
+
+            // Calculate 5 pixel offsets
+            dx = 5 / Math.sqrt(1 + Math.pow(perpSlope, 2));
+            dy = perpSlope * dx;
+        }
+
+        // Calculate points for perpendicular line
+        let perpStartX = x3 - dx;
+        let perpStartY = y3 - dy;
+        let perpEndX = x3 + dx;
+        let perpEndY = y3 + dy;
 
 
-        // Triangles (Fill in)
-        line(x1, y1, x2, y2);
-        line(x3, y3, x2, y2);
+        // READ ME
+        // First circle point (touches circle) - (x1, x2)
+        // Second circle point (touches circle) - (x2, y2)
+        // Point 5 pixels away from second circle (5 pixels away from second circle) - (x3, y3)
+        // Points perpendicular to line between first and second circle that is perpendicular at the point (x3, y3) - (perpStartX, perpStartY) and (perpEndX, perpEndY)
+
+        // Draw the triangle
+        // Use perpStartX and perpStartY to define 'left' vertex of triangle
+        // Middle of triangle is the point that touches the second circle (x2, y2)
+        // End point of triangle is perpEndX, perpEndY
+        triangle(perpStartX, perpStartY, x2, y2, perpEndX, perpEndY);
+
+        // Line from first circle to point that is 5 pixels away from second circle (x3, y3) (This is so the line does not go through the arrow)
+        line(x1, y1, x3, y3);
     }
 
 }
