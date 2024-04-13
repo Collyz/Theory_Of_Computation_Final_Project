@@ -94,6 +94,7 @@ function mouseReleased(){
 window.addEventListener('keydown', function(e){
     if(e.key === 'Delete'){
         if(lastBlue !== null){
+            // Add line removal logic (TODO)
             circles.splice(lastBlue, 1);
             lastBlue = null;
         }
@@ -114,22 +115,25 @@ window.addEventListener("click", function(e){
 
 // Behavior: Triggers only once per click, i.e. cannot drag to create
 
-// On Double Click, draw a circle
-
+// On Double Click, draw a circle (if on blue circle, make accept state or revert to normal state)
 ondblclick = (event) =>{
     let d = 0;
-    // If on top of a blue circle and a blue circle is selected, double click will make it an accept circle (accept state)
+
     if(mouseButton === LEFT && lastBlue !== null){
+        // If double click with left mouse button and a blue circle is selected
         d = dist(mouseX, mouseY, circles[lastBlue].x, circles[lastBlue].y);
         if(d < circles[lastBlue].r){
+            // If on top of blue circle make accept state / revert it
             if(circles[lastBlue].acceptState){
                 circles[lastBlue].acceptState = false;
             }else{
                 circles[lastBlue].acceptState = true;
             }
         }else{
+            // If not on blue circle, add a new circle to the canvas
             circles.push(new Circ(null, null, 'None'));
         }
+        // If no blue circle already exists, make a new circle
     }else{
         circles.push(new Circ(null, null, 'None'));
     }
