@@ -37,6 +37,7 @@ function draw(){
 
     // Updating position of selected blue circle when dragging
     if(dragging && lastBlue !== null){
+        
         circles.splice(lastBlue, 1, new Circ(mouseX, mouseY, 'blue'));
         
     }
@@ -169,26 +170,26 @@ class Arrow {
         let x3 = (1-t3)*x2 + (t3*x1);
         let y3 = (1-t3)*y2 + (t3*y1);
 
-        let slope = 0;
-        if((x3-x2) == 0){
-            slope = undefined;
-        } else if(y3-y2 == 0){
-            slope = 0;
-        }else{
-            slope = (y3-y2)/(x3-x2);
-        }
+        // let slope = 0;
+        // if((x3-x2) == 0){
+        //     slope = undefined;
+        // } else if(y3-y2 == 0){
+        //     slope = 0;
+        // }else{
+        //     slope = (y3-y2)/(x3-x2);
+        // }
 
-        function getY(x, x1, y1, slope){
-            return (slope*(x-x1))+y1;
-        }
-        x4 = 
-        y4 = 
-        x5 = 
-        y5 = 
+        // function getY(x, x1, y1, slope){
+        //     return (slope*(x-x1))+y1;
+        // }
+        // x4 = 
+        // y4 = 
+        // x5 = 
+        // y5 = 
 
 
         // Triangles (Fill in)
-        // line(x1, y1, x2, y2);
+        line(x1, y1, x2, y2);
         line(x3, y3, x2, y2);
     }
 
