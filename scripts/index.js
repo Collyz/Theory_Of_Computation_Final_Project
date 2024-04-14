@@ -59,19 +59,27 @@ function mousePressed(){
             if(lastBlue === null){
                 let tempX = circles[i].x;
                 let tempY = circles[i].y;
-                circles[i].color = 'blue';
+                circles[i].color = 'red';
                 lastBlue = i;
                 currCirc = i;
             }else{
                 // If there is a previous blue circle, replace the old one 
                 circles[lastBlue].color = 'None';
                 // Make the new selected circle blue
-                circles[i].color = 'blue';
+                circles[i].color = 'red';
                 prevCirc = lastBlue;
                 lastBlue = i;
                 currCirc = i;
             }
-            
+            if(mouseButton === RIGHT && lastBlue !== null){
+                // Error catching if the user cancels the prompt
+                let label = prompt("Enter state name", "");
+                // Error catching if the user cancels the prompt
+                if(label === null){
+                    label = ""
+                }
+                circles[lastBlue].text = label;
+            }
             break;
         }
     }
@@ -154,6 +162,7 @@ class Circ {
         this.r = this.d/2;
         this.color = color;
         this.acceptState = false;
+        this.text = "";
     }
 
     display(){
@@ -173,6 +182,7 @@ class Circ {
             circle(this.x, this.y, this.d);
             circle(this.x, this.y, this.d-10);
         }
+        text(this.text, this.x - (this.text.length*3), this.y+3);
         
     }
 
