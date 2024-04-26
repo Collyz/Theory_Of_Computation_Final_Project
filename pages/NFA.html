@@ -32,9 +32,6 @@
                         <li>
                             <a class="nav-link" href="NFA.html">NFA</a>
                         </li>
-                        <li>
-                            <a class="nav-link" href="PDA.html">PDA</a>
-                        </li>
                     </ul>
                 </div>
             </div>
@@ -45,6 +42,18 @@
     <div class="container text-center">
         <h1>Non-Deterministic Finite Automata Designer - ToC Final Project</h1>
         <div id="canvasContainer" class="container text-center"></div>
+        <button id='String'>Enter String</button>
+        <p></p>
+        <h6>How to use:</h6>
+        <div class="container text-center w-50">
+            <ul class="text-start">
+                <li><u>Create State:</u> Double click inside box</li>
+                <li><u>Create Accept State:</u> Double click existing state</li>
+                <li><u>Label States:</u> Right click existing state</li>
+                <li><u>Create Arrows:</u> Click previous state first, THEN hold shift and click next state</li>
+                <li><u>Delete States:</u> Click on state once, (make sure border is red), press 'Delete' key <u><b>WIP</b></u></li>
+            </ul>
+        </div>
         
     </div>
     
@@ -52,5 +61,13 @@
     
     <script src="../scripts/NFA.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script> document.getElementById('String').onclick = function () {
+        var string = prompt("Enter string: ");
+          if (string == null || string == "") {
+            alert("No String Entered.");
+            } else {
+            alert(string);
+            }
+        } </script>
 </body>
 </html>
