@@ -1,5 +1,6 @@
 // Holds all circles (circle data)
 let circles = [];
+let start = null;
 // Holds all line data()
 let lines = [];
 // Previously selected 
@@ -85,8 +86,12 @@ function mousePressed(){
                 // Error catching if the user cancels the prompt
                 if(label === null){
                     label = ""
-                }
+                } 
                 circles[lastBlue].text = label;
+                if(label === "q_0"){
+                    start = lastBlue;
+                    circle[start].color = 'blue';
+                }
             }
             break;
         }
