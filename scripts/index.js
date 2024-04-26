@@ -13,6 +13,7 @@ let offsetY = 0;
 // Line Drawing
 let prevCirc = null;
 let currCirc = null;
+let deleteBool = null;
 
 // P5 canvas setup
 function setup() {
@@ -25,6 +26,13 @@ function setup() {
 function draw(){
     clear();
     background(200);
+    if(deleteBool == true){
+        console.log('Calling Delete');
+        deleteCircles();
+        deleteBool = false;
+        console.log('Bool set back to false');
+    }
+
 
     // REUSING i and lengths
     let i = 0, lenCir = circles.length, lenLine = lines.length;
@@ -98,13 +106,36 @@ function mouseReleased(){
     dragging = false;
 }
 
+function deleteCircles(){
+    // Add line removal logic (TODO)
+    let toDelete = [];
+    for(let i = 0; i < lines.length; i++){
+        if(lines[i].c1 === lastBlue || lines[i].c2 === lastBlue ){
+            console.log("Circle 1: " + lines[i].c1 + " Circle 2: " + lines[i].c2);
+            toDelete.push(i);
+        }
+    }
+    
+    toDelete.sort(function(a, b){return a - b});
+    for(let i = toDelete.length-1; i >=0 ; i--){
+        lines.splice(toDelete[i], 1);
+    }
+
+    // Adjust line indices after removing lines
+    for(let i = 0; i < lines.length; i++){
+        if(lines[i].c1 > lastBlue) lines[i].c1--; // Decrement index if it's greater than the deleted circle index
+        if(lines[i].c2 > lastBlue) lines[i].c2--; // Decrement index if it's greater than the deleted circle index
+    }
+
+    circles.splice(lastBlue, 1);
+    lastBlue = null;
+}
+
 // Delete blue circles
 window.addEventListener('keydown', function(e){
     if(e.key === 'Delete'){
         if(lastBlue !== null){
-            // Add line removal logic (TODO)
-            circles.splice(lastBlue, 1);
-            lastBlue = null;
+            deleteBool = true;
         }
     }
 
@@ -126,7 +157,6 @@ window.addEventListener("click", function(e){
 // On Double Click, draw a circle (if on blue circle, make accept state or revert to normal state)
 ondblclick = (event) =>{
     let d = 0;
-
     if(mouseButton === LEFT && lastBlue !== null){
         // If double click with left mouse button and a blue circle is selected
         d = dist(mouseX, mouseY, circles[lastBlue].x, circles[lastBlue].y);
@@ -146,7 +176,6 @@ ondblclick = (event) =>{
         circles.push(new Circ(null, null, 'None'));
     }
 };
-
 
 
 class Circ {
