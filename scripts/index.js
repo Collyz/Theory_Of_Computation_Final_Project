@@ -3,7 +3,7 @@ let circles = [];
 let start = null;
 // Holds all line data()
 let lines = [];
-
+let adjList = null;
 // Dragging 
 let dragging = false;
 let offsetX = 0;
@@ -19,6 +19,7 @@ function setup() {
     let myCanvas = createCanvas(600, 400);
     myCanvas.parent('canvasContainer');
     background(200);
+    adjList = new AdjList();
 }
 
 // Draws every frame
@@ -152,6 +153,10 @@ function deleteCircles(){
 
     circles.splice(currCirc, 1);
     currCirc = null;
+
+
+    //A new Adj List is created every time a state is deleted to accomodate new changes
+    generateAdjList();
 }
 
 // Delete blue circles
@@ -169,6 +174,8 @@ window.addEventListener("click", function(e){
         if(currCirc !== null){
             if(currCirc !== null && prevCirc !== null){
                 lines.push(new Arrow(prevCirc, currCirc));
+                //A new Adj List is created every time that a new line is added
+                generateAdjList();
             }
         }
     }
@@ -198,6 +205,16 @@ ondblclick = (event) => {
         circles.push(new Circ(null, null, 'None'));
     }
 };
+
+
+function generateAdjList(){
+    adjList = new AdjList();
+    for(let line of lines){
+        adjList.addToAdjList(line.c1, line.c2);
+    }
+    //This is used to just keep track of the adj list changes by printing to console
+    adjList.print();
+}
 
 
 class Circ {
@@ -378,4 +395,31 @@ class Arrow {
         }
     }
 
+}
+
+
+class AdjList{
+    constructor(){
+        //A map will contain the specific node
+        //which is paired with it's adjacency list
+        this.adjList = {};
+    }
+    
+    //Adds a node to a specific list within the Adj List
+    addToAdjList(node, newNode){
+        //Create a new list for that specific node if it doesn't exist in the Adj List
+        if(this.adjList[node] == null){
+            this.adjList[node] = [];
+        }
+        this.adjList[node].push(newNode);
+    }
+    
+    //Print function for each list if u wanna test stuff
+    print(){
+        for(let node in this.adjList){
+            console.log(node + ": "+ this.adjList[node]);
+        }
+    }
+    
+    
 }
