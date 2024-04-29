@@ -13,6 +13,7 @@ let prevCirc = null;
 let currCirc = null;
 let deleteBool = null;
 let currLine = null;
+let alphabetArray = [];
 
 // P5 canvas setup
 function setup() {
@@ -109,6 +110,7 @@ function mousePressed(){
             lines[i].color = "green";
             if(weight !== null){
                 lines[i].text = weight;
+                lines[i].transition
             }else{
                 lines[i].text = "";
             }
@@ -180,6 +182,37 @@ window.addEventListener("click", function(e){
         }
     }
 });
+
+//This is to acquire the alphabet from the user's input
+document.getElementById('Alphabet').onclick = function(){
+    var alphabet = prompt("Enter alphabet (Please separate each value with a comma and no spaces): ");
+    if(alphabet == null || alphabet.trim() == ""){
+        alert("No alphabet entered.");
+    }
+    else{
+        var div = document.getElementById("currAlphabet");
+        div.innerHTML = alphabet;
+        alphabetArray = alphabet.split(',');
+        console.log(alphabetArray);
+    }
+}
+
+//This is to acquire the input string from the user's input
+document.getElementById('String').onclick = function () {
+    var string = prompt("Enter string: ");
+    if (string == null || string == "") {
+        alert("No String Entered.");
+    }
+    else {
+        //Checks to see if the string contains characters only in the alphabet
+        for(var i = 0; i < string.length; i++){
+            if (alphabetArray.indexOf(string[i]) === -1) {
+                alert("String contains symbols not in the alphabet"); // If a character is not found in the charArray, return false
+                break;
+            }
+        }
+    }
+}
 
 // Behavior: Triggers only once per click, i.e. cannot drag to create
 
