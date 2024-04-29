@@ -1,8 +1,9 @@
 # Theory of Computation Final Project
 
 ### Contributers:
- + Mohammed Mowla
- + Parth Patel
+ + Mohammed Mowla (Collyz)
+ + Parth Patel (ParthP22)
+ + Serena Su (sjsusu)
 
 Intro/About/Goal (FILL IN)
 
