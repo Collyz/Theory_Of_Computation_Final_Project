@@ -13,14 +13,14 @@ let prevCirc = null;
 let currCirc = null;
 let deleteBool = null;
 let currLine = null;
-let alphabetArray = [];
+let alphabetArray = ['0','1'];
 
 // P5 canvas setup
 function setup() {
     let myCanvas = createCanvas(600, 400);
     myCanvas.parent('canvasContainer');
     background(200);
-    adjList = new AdjList();
+    
 }
 
 // Draws every frame
@@ -106,11 +106,24 @@ function mousePressed(){
         // Check if mouse click is close enough to the line
         if(lines[i].isMouseOnLine() && mouseButton === RIGHT){ // Add a small tolerance
             // lines[i].color = "green";
-            let weight = prompt("Enter a weight for the line:")
+            let weight = prompt("Enter a weight for the line:");
+            
             lines[i].color = "green";
+            
             if(weight !== null){
+                currTransitions = weight.split(",");
                 lines[i].text = weight;
-                lines[i].transition
+                for(var j = 0; j < currTransitions.length; j++){
+                    if (alphabetArray.indexOf(currTransitions[j]) === -1) {
+                        alert("Transition contains symbols not in the alphabet"); // If a character is not found in the charArray, return false
+                        lines[i].text = "";
+                        lines[i].transition = [];
+                        break;
+                    }
+                    lines[i].addTransition(currTransitions[j]);
+                }
+                
+                print(lines[i].transition);
             }else{
                 lines[i].text = "";
             }
@@ -204,13 +217,57 @@ document.getElementById('String').onclick = function () {
         alert("No String Entered.");
     }
     else {
-        //Checks to see if the string contains characters only in the alphabet
+        //This block of code checks to see if the string contains characters only in the alphabet
+        let valid = true;
         for(var i = 0; i < string.length; i++){
             if (alphabetArray.indexOf(string[i]) === -1) {
                 alert("String contains symbols not in the alphabet"); // If a character is not found in the charArray, return false
+                valid = false;
+                console.log(valid);
                 break;
             }
         }
+        if(valid === true && start !== null){
+            readString(string);
+        }
+        if(start === null){
+            alert("No start state has been defined.");
+        }
+    }
+}
+
+
+function readString(string){
+    currState = start;
+    prevState = start;
+    // console.log(typeof(currState));
+    console.log("Start: " + currState);
+    for(var i = 0; i < string.length; i++){
+        console.log("Curr symbol " + string[i]);
+        currList = adjList.getList(currState);
+        // console.log(currList);
+        for(var j = 0; j < currList.length; j++){
+            transitionsList = currList[j][1];
+            console.log(transitionsList);
+            if(transitionsList.indexOf(string[i]) !== -1){
+                console.log("Curr state " + currState[i]);
+                prevState = currState;
+                currState = currList[j][0];
+            }
+            else{   
+                alert("This string is rejected");
+                return;
+            }
+        }
+    }
+    console.log("Final state " + currState);
+    console.log("Final state circle " + circles[currState]);
+    console.log("Final state circle " + circles[currState].acceptState);
+    if(circles[currState] !== null && circles[currState].acceptState === true){
+        alert("This string is accepted");
+    }
+    else{
+        alert("This string is rejected");
     }
 }
 
@@ -243,9 +300,11 @@ ondblclick = (event) => {
 function generateAdjList(){
     adjList = new AdjList();
     for(let line of lines){
-        adjList.addToAdjList(line.c1, line.c2);
+        
+        adjList.addToAdjList(line.c1, line.c2, line.getTransition());
     }
     //This is used to just keep track of the adj list changes by printing to console
+    
     adjList.print();
 }
 
@@ -298,6 +357,7 @@ class Arrow {
         this.c2 = c2;
         this.text = "";
         this.color = null;
+        this.transition = [];
         this.x1 = null;
         this.x2 = null;
         this.y1 = null;
@@ -315,6 +375,26 @@ class Arrow {
             return true;
         }
         return false;
+    }
+
+
+    addTransition(symbol){
+        //Checks to see if the transition is already written on the line
+        if(this.transition.indexOf(symbol) === -1){
+            this.transition.push(symbol);
+        }
+        else{
+            alert("This symbol is already a part of this transition");
+        }
+    }
+
+    getTransition(){
+        if(this.transition !== null){
+            return this.transition;
+        }
+        else{
+            console.log("No transitions have been defined for this line");
+        }
     }
 
     display(){
@@ -439,12 +519,28 @@ class AdjList{
     }
     
     //Adds a node to a specific list within the Adj List
-    addToAdjList(node, newNode){
+    addToAdjList(node, newNode, transition){
         //Create a new list for that specific node if it doesn't exist in the Adj List
         if(this.adjList[node] == null){
+            // console.log(typeof(node));
             this.adjList[node] = [];
         }
-        this.adjList[node].push(newNode);
+        if(this.adjList[node].indexOf(newNode) === -1){
+            // console.log(typeof(this.adjList[node]));
+            let pair = [];
+            pair.push(newNode);
+            pair.push(transition);
+            this.adjList[node].push(pair);
+        }
+    }
+
+    getList(node){
+        if(this.adjList[node] !== null){
+            return this.adjList[node];
+        }
+        else{
+            console.log("This node does not have any edges");
+        }
     }
     
     //Print function for each list if u wanna test stuff
