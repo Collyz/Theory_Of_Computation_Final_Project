@@ -238,26 +238,37 @@ document.getElementById('String').onclick = function () {
 
 
 function readString(string){
-    currState = start;
-    prevState = start;
+    let currState = start;
+    let prevState = start;
+    let nextTrans = false;
     // console.log(typeof(currState));
     console.log("Start: " + currState);
     for(var i = 0; i < string.length; i++){
         console.log("Curr symbol " + string[i]);
         currList = adjList.getList(currState);
+        console.log("Curr list" + currList);
+        if(currList === undefined || currList === null){
+            alert("This string is rejected");
+            return;
+        }
         // console.log(currList);
         for(var j = 0; j < currList.length; j++){
             transitionsList = currList[j][1];
             console.log(transitionsList);
             if(transitionsList.indexOf(string[i]) !== -1){
-                console.log("Curr state " + currState[i]);
+                console.log("Curr state " + currState);
                 prevState = currState;
+                nextTrans = true;
                 currState = currList[j][0];
+                break;
             }
             else{   
-                alert("This string is rejected");
-                return;
+                nextTrans = false;
             }
+        }
+        if(nextTrans === false){
+            alert("This string is rejected");
+            return;
         }
     }
     console.log("Final state " + currState);
