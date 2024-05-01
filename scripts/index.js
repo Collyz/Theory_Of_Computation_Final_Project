@@ -13,6 +13,7 @@ let prevCirc = null;
 let currCirc = null;
 let deleteBool = null;
 let currLine = null;
+// The alphabet is set to contain 0's and 1's by default. We'll change to null later
 let alphabetArray = ['0','1'];
 
 // P5 canvas setup
@@ -111,6 +112,8 @@ function mousePressed(){
             lines[i].color = "green";
             
             if(weight !== null){
+                //All code under this if-statement replaces any old transitions with new transitions
+                lines[i].transition = [];
                 currTransitions = weight.split(",");
                 lines[i].text = weight;
                 for(var j = 0; j < currTransitions.length; j++){
@@ -122,8 +125,10 @@ function mousePressed(){
                     }
                     lines[i].addTransition(currTransitions[j]);
                 }
-                
                 print(lines[i].transition);
+
+                //Add new transitions to adj list
+                generateAdjList();
             }else{
                 lines[i].text = "";
             }
@@ -227,6 +232,7 @@ document.getElementById('String').onclick = function () {
                 break;
             }
         }
+        //If a valid input has been entered and if a start state has been defined, then read the input
         if(valid === true && start !== null){
             readString(string);
         }
@@ -236,10 +242,11 @@ document.getElementById('String').onclick = function () {
     }
 }
 
-
+//This function is used to read the input string
+//(the console.log statements are to just help track adj list changes
+//Please keep them for now).
 function readString(string){
     let currState = start;
-    let prevState = start;
     let nextTrans = false;
     // console.log(typeof(currState));
     console.log("Start: " + currState);
@@ -257,7 +264,6 @@ function readString(string){
             console.log(transitionsList);
             if(transitionsList.indexOf(string[i]) !== -1){
                 console.log("Curr state " + currState);
-                prevState = currState;
                 nextTrans = true;
                 currState = currList[j][0];
                 break;
@@ -266,6 +272,7 @@ function readString(string){
                 nextTrans = false;
             }
         }
+        //Rejects the string if there is no other transition to go to
         if(nextTrans === false){
             alert("This string is rejected");
             return;
@@ -274,6 +281,7 @@ function readString(string){
     console.log("Final state " + currState);
     console.log("Final state circle " + circles[currState]);
     console.log("Final state circle " + circles[currState].acceptState);
+    //Checks if the string is in the accept state at the very end
     if(circles[currState] !== null && circles[currState].acceptState === true){
         alert("This string is accepted");
     }
@@ -545,6 +553,8 @@ class AdjList{
         }
     }
 
+    //Returns adj list for a specific node
+    //Trying to access the adj list normally was giving me and undefined list, so I had to create this getter method
     getList(node){
         if(this.adjList[node] !== null){
             return this.adjList[node];
