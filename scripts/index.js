@@ -22,7 +22,7 @@ let inputString = "";
 function setup() {
     let myCanvas = createCanvas(600, 400);
     myCanvas.parent('canvasContainer');
-    background(200);
+    background(181, 166, 130);
     
 }
 
@@ -108,9 +108,7 @@ function mousePressed(){
     for(let i = 0; i < lines.length; i++){
         // Check if mouse click is close enough to the line
         if(lines[i].isMouseOnLine() && mouseButton === RIGHT){ // Add a small tolerance
-            // lines[i].color = "green";
             let weight = prompt("Enter a weight for the line:");
-            
             lines[i].color = "green";
             
             if(weight !== null){
@@ -399,12 +397,21 @@ class Arrow {
         let d = dist(mouseX, mouseY, this.x1, this.y1);
         let d2 = dist(mouseX, mouseY, this.x2, this.y2);
         let lineLength = dist(this.x1, this.y1, this.x2, this.y2);
-
-        // Check if mouse click is close enough to the line
-        if (d + d2 <= lineLength + 5) { // Add a small tolerance
-            return true;
+        if(this.c1 !== this.c2){
+            // Check if mouse click is close enough to the line
+            if (d + d2 <= lineLength + 5) { // Add a small tolerance
+                return true;
+            }
+            return false;
+        }else{
+            let d = dist(mouseX, mouseY, this.x1, this.y1);
+            if(d <= 10 + 5){
+                return true;
+            }else{
+                return false;
+            }
         }
-        return false;
+
     }
 
 
@@ -437,9 +444,10 @@ class Arrow {
             let startAngle = PI;
             let endAngle = 0;
 
-            //
             stroke(0);
             noFill();
+            this.x1 = centerX;
+            this.y1 = centerY-radius-10; 
             arc(centerX, centerY-radius+4, radius, radius * 2, startAngle, endAngle - 0.872665);
             // Find points for the triangle that points down into the circle
             let triangleBaseWidth = 10; // Adjust the width of the triangle base as needed
@@ -455,7 +463,6 @@ class Arrow {
             let triangleY3 = centerY - radius + 1;
 
             // Draw the triangle
-            
             triangle(triangleX1, triangleY1, triangleX2, triangleY2, triangleX3, triangleY3);
             text(this.text, triangleX1 - 10, triangleY1 - 20);
         }else{
