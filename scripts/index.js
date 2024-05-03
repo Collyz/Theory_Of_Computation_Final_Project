@@ -15,6 +15,8 @@ let deleteBool = null;
 let currLine = null;
 // The alphabet is set to contain 0's and 1's by default. We'll change to null later
 let alphabetArray = ['0','1'];
+// Hold the string
+let inputString = "";
 
 // P5 canvas setup
 function setup() {
@@ -50,7 +52,7 @@ function draw(){
         i++;
     }
 
-    // Updating position of selected blue circle when dragging
+    // Updating position of selected red circle when dragging
     if (dragging && currCirc !== null) {
         circles[currCirc].x = mouseX - offsetX;
         circles[currCirc].y = mouseY - offsetY;
@@ -63,16 +65,16 @@ function mousePressed(){
     // Selection loop
     for(let i = 0 ; i < circles.length; i++){
         if(dist(mouseX, mouseY, circles[i].x, circles[i].y) < circles[i].r){
-            // If there is a previous blue circle, check, if not, make current selection blue
+            // If there is a previous red circle, check, if not, make current selection red
             if(currCirc === null){
                 let tempX = circles[i].x;
                 let tempY = circles[i].y;
                 circles[i].color = 'red';
                 currCirc = i;
             }else{
-                // If there is a previous blue circle, replace the old one 
+                // If there is a previous red circle, replace the old one 
                 circles[currCirc].color = 'None';
-                // Make the new selected circle blue
+                // Make the new selected circle red
                 circles[i].color = 'red';
                 prevCirc = currCirc;
                 currCirc = i;
@@ -87,7 +89,7 @@ function mousePressed(){
                 circles[currCirc].text = label;
                 if(label === "q_0"){
                     start = currCirc;
-                    circles[start].color = 'blue';
+                    circles[start].color = 'red';
                 }
             }
             break;
@@ -174,12 +176,11 @@ function deleteCircles(){
     circles.splice(currCirc, 1);
     currCirc = null;
 
-
     //A new Adj List is created every time a state is deleted to accomodate new changes
     generateAdjList();
 }
 
-// Delete blue circles
+// Delete red circles
 window.addEventListener('keydown', function(e){
     if(e.key === 'Delete'){
         if(currCirc !== null){
@@ -217,15 +218,20 @@ document.getElementById('Alphabet').onclick = function(){
 
 //This is to acquire the input string from the user's input
 document.getElementById('String').onclick = function () {
-    var string = prompt("Enter string: ");
-    if (string == null || string == "") {
+    // Storing the input string;
+    inputString = prompt("Enter string: ");
+    if (inputString == null || inputString == "") {
         alert("No String Entered.");
+        inputString = "";
+        document.getElementById("input").innerHTML = "input: (empty)";
     }
     else {
+        // Show the input string on the page
+        document.getElementById("input").innerHTML = "input: "+ inputString;
         //This block of code checks to see if the string contains characters only in the alphabet
         let valid = true;
-        for(var i = 0; i < string.length; i++){
-            if (alphabetArray.indexOf(string[i]) === -1) {
+        for(var i = 0; i < inputString.length; i++){
+            if (alphabetArray.indexOf(inputString[i]) === -1) {
                 alert("String contains symbols not in the alphabet"); // If a character is not found in the charArray, return false
                 valid = false;
                 console.log(valid);
@@ -234,7 +240,7 @@ document.getElementById('String').onclick = function () {
         }
         //If a valid input has been entered and if a start state has been defined, then read the input
         if(valid === true && start !== null){
-            readString(string);
+            readString(inputString);
         }
         if(start === null){
             alert("No start state has been defined.");
@@ -288,30 +294,35 @@ function readString(string){
     else{
         alert("This string is rejected");
     }
+    circles[currState].color = "purple";
 }
 
 // Behavior: Triggers only once per click, i.e. cannot drag to create
 
-// On Double Click, draw a circle (if on blue circle, make accept state or revert to normal state)
+// On Double Click, draw a circle (if on red circle, make accept state or revert to normal state)
 ondblclick = (event) => {
     let d = 0;
-    if (mouseButton === LEFT && currCirc !== null) {
-        // If double click with left mouse button and a blue circle is selected
+    if (mouseButton === LEFT && currCirc !== null && mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height) {
+        // If double click with left mouse button and a red circle is selected
         d = dist(mouseX, mouseY, circles[currCirc].x, circles[currCirc].y);
         if (d < circles[currCirc].r) {
-            // If on top of blue circle make accept state / revert it
+            // If on top of red circle make accept state / revert it
             if (circles[currCirc].acceptState) {
                 circles[currCirc].acceptState = false;
             } else {
                 circles[currCirc].acceptState = true;
             }
         } else {
-            // If not on blue circle, add a new circle to the canvas
+            // If not on red circle, add a new circle to the canvas
+            if(mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height){
+                circles.push(new Circ(null, null, 'None'));
+            }
+        }
+        // If no red circle already exists, make a new circle
+    } else {
+        if(mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height){
             circles.push(new Circ(null, null, 'None'));
         }
-        // If no blue circle already exists, make a new circle
-    } else {
-        circles.push(new Circ(null, null, 'None'));
     }
 };
 

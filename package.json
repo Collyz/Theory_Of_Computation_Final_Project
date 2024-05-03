@@ -18,6 +18,6 @@
   "homepage": "https://github.com/Collyz/Theory_Of_Computation_Final_Project#readme",
   "dependencies": {
     "interactjs": "^1.10.27",
-    "p5": "^1.9.2"
+    "p5": "^1.9.3"
   }
 }
