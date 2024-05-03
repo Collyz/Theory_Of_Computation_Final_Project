@@ -192,9 +192,36 @@ window.addEventListener("click", function(e){
     if(e.shiftKey){
         if(currCirc !== null){
             if(currCirc !== null && prevCirc !== null){
-                lines.push(new Arrow(prevCirc, currCirc));
-                //A new Adj List is created every time that a new line is added
-                generateAdjList();
+                if(adjList !== null){
+                    // console.log(prevCirc);
+                    console.log(adjList);
+                    tmpList = adjList.getList(prevCirc);
+                    console.log(tmpList);
+                    if(tmpList !== undefined){
+                        prevList = [];
+                        for(let i = 0; i < tmpList.length; i++){
+                            prevList.push(tmpList[i][0]);
+                        }
+                    }
+                    else{
+                        prevList = undefined;
+                    }
+                    console.log("Prevlist" + prevList);
+                    if(prevList !== undefined && prevList.indexOf(currCirc) !== -1){
+                        console.log(prevCirc);
+                        alert("This line already exists");
+                    }
+                    else{
+                        lines.push(new Arrow(prevCirc, currCirc));
+                        //A new Adj List is created every time that a new line is added
+                        generateAdjList();
+                    }
+                }
+                else{
+                    lines.push(new Arrow(prevCirc, currCirc));
+                    //A new Adj List is created every time that a new line is added
+                    generateAdjList();
+                }
             }
         }
     }
@@ -390,6 +417,8 @@ class Arrow {
         this.x2 = null;
         this.y1 = null;
         this.y2 = null;
+        this.above = null;
+        this.below = null;
     }
 
     isMouseOnLine() {
