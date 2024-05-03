@@ -117,6 +117,7 @@ function mousePressed(){
                 currTransitions = weight.split(",");
                 lines[i].text = weight;
                 initialPoint = lines[i].c1;
+                terminalPoint = lines[i].c2;
                 for(var j = 0; j < currTransitions.length; j++){
                     if (alphabetArray.indexOf(currTransitions[j]) === -1) {
                         alert("Transition contains symbols not in the alphabet"); // If a character is not found in the charArray, return false
@@ -156,7 +157,7 @@ function mousePressed(){
 
 // This checks if the transition that the user adds violates the determinism rule or not
 // This is more of a "correctness" check
-function determinismCheckForTransition(initialPoint, currTransition){
+function determinismCheckForTransition(initialPoint, terminalPoint, currTransition){
     tmpList = adjList.getList(initialPoint);
     console.log("Init point type: " + typeof(initialPoint));
     console.log("Init point list: " + tmpList);
@@ -166,7 +167,8 @@ function determinismCheckForTransition(initialPoint, currTransition){
         console.log("Curr Trans: " + currTransition)
         for(let j = 0; j < tmpTransitionsList.length; j++){
             console.log("tmpTransitionsList[j]: " + tmpTransitionsList[j]);
-            if(currTransition === tmpTransitionsList[j]){
+            if(currTransition === tmpTransitionsList[j] && terminalPoint != tmpList[i][0]){
+                console.log("initial point: " + initialPoint + ", curr point: " + tmpList[i][0]);
                 return false;
             }
         }
@@ -181,6 +183,7 @@ function determinismCheckForInput(){
     for(let c = 0; c < circles.length; c++){
         tmpList = adjList.getList(c);
         console.log(tmpList);
+        // If the list for a specific node doesn't exist, then it automatically violates determinism
         if(tmpList === undefined || tmpList === null){
             return false;
         }
