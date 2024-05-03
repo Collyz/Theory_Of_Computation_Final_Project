@@ -125,7 +125,7 @@ function mousePressed(){
                         lines[i].transition = [];
                         break;
                     }
-                    if(determinismCheckForTransition(initialPoint, currTransitions[j]) === false){
+                    if(determinismCheckForTransition(initialPoint, terminalPoint, currTransitions[j]) === false){
                         console.log("determinism check");
                         alert("Transition already exists; violates determinism rule"); // If a character is not found in the charArray, return false
                         lines[i].text = "";
@@ -163,7 +163,7 @@ function determinismCheckForTransition(initialPoint, terminalPoint, currTransiti
     console.log("Init point list: " + tmpList);
     for(let i = 0; i < tmpList.length; i++){
         tmpTransitionsList = tmpList[i][1];
-        console.log("TmpTransitionsList: " + tmpTransitionsList + " " + typeof(lines));
+        console.log("TmpTransitionsList: " + tmpTransitionsList);
         console.log("Curr Trans: " + currTransition)
         for(let j = 0; j < tmpTransitionsList.length; j++){
             console.log("tmpTransitionsList[j]: " + tmpTransitionsList[j]);
@@ -198,9 +198,10 @@ function determinismCheckForInput(){
                             break;
                         }
                     }
-                    if(complete === false){
-                        return false;
-                    }
+                    
+                }
+                if(complete === false){
+                    return false;
                 }
             }
         }
@@ -284,11 +285,13 @@ window.addEventListener("click", function(e){
                         //Ex: If a line from A -> B exists, and we want to make a line for B -> A, then there will need to be some changes made here
                         
                         tmpList2 = adjList.getList(currCirc);
+                        //Checks if any lines for the terminal vertex already exist
                         if(tmpList2 !== undefined){
                             currCircList = [];
                             for(let i = 0; i < tmpList2.length; i++){
                                 currCircList.push(tmpList2[i][0]);
                             }
+                            //Checks among the lines of the terminal vertex and looks to see if a line in the opposite direction exists
                             if(currCircList.indexOf(prevCirc) !== -1){
                                 prevCircIndex = currCircList.indexOf(prevCirc);
                                 aboveLineIndex = tmpList2[prevCircIndex][2];
@@ -529,7 +532,7 @@ class Arrow {
         let lineLength = dist(this.x1, this.y1, this.x2, this.y2);
         if(this.c1 !== this.c2){
             // Check if mouse click is close enough to the line
-            if (d + d2 <= lineLength + 5) { // Add a small tolerance
+            if (d + d2 <= lineLength + 2) { // Add a small tolerance
                 return true;
             }
             return false;
@@ -676,14 +679,22 @@ class Arrow {
             if(this.above === true){
                 perpStartY = perpStartY - 10;
                 perpEndY = perpEndY - 10;
+                perpStartX = perpStartX - 10;
+                perpEndX = perpEndX - 10;
                 y1 = y1 - 10;
                 y3 = y3 - 10;
+                x1 = x1 - 10;
+                x3 = x3 - 10;
             }
             else if(this.below === true){
                 perpStartY = perpStartY + 10;
                 perpEndY = perpEndY + 10;
+                perpStartX = perpStartX + 10;
+                perpEndX = perpEndX + 10;
                 y1 = y1 + 10;
                 y3 = y3 + 10;
+                x1 = x1 + 10;
+                x3 = x3 + 10;
             }
 
             triangle(perpStartX, perpStartY, x2, y2, perpEndX, perpEndY);
