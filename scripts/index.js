@@ -364,13 +364,14 @@ document.getElementById('String').onclick = function () {
         document.getElementById("input").innerHTML = "Input: (empty)";
     }
     else {
+        document.getElementById("input").innerHTML = "Input: " + inputString;
         if(determinismCheckForInput() === false){
             console.log("Determinism check for input");
             alert("Not all symbols in the alphabet were used for each state; violates determinism rule");
         }
         else{
             // Show the input string on the page
-            document.getElementById("input").innerHTML = "input: " + inputString;
+            document.getElementById("input").innerHTML = "Input: " + inputString;
             //This block of code checks to see if the string contains characters only in the alphabet
             let valid = true;
             for(var i = 0; i < inputString.length; i++){
