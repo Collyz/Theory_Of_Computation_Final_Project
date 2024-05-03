@@ -114,8 +114,21 @@ function mousePressed(){
             if(weight !== null){
                 //All code under this if-statement replaces any old transitions with new transitions
                 lines[i].transition = [];
+
+                // This block of code removes any duplicates from the inputted transition
+                let sortedString = weight.split(",").sort();
+                let distinctWeights = [];
+                for(let i = 0; i < sortedString.length; i++){
+                    if(distinctWeights.indexOf(sortedString[i]) === -1){
+                        distinctWeights.push(sortedString[i]);
+                    }
+                }
+                weight = distinctWeights.join(",");
+
+
+
                 currTransitions = weight.split(",");
-                lines[i].text = weight;
+                
                 initialPoint = lines[i].c1;
                 terminalPoint = lines[i].c2;
                 for(var j = 0; j < currTransitions.length; j++){
@@ -132,7 +145,9 @@ function mousePressed(){
                         lines[i].transition = [];
                         break;
                     }
+
                     lines[i].addTransition(currTransitions[j]);
+                    lines[i].text = weight;
                 }
                 print(lines[i].transition);
 
