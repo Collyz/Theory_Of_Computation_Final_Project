@@ -155,8 +155,10 @@ function mousePressed(){
 }
 
 // This checks if the transition that the user adds violates the determinism rule or not
+// This is more of a "correctness" check
 function determinismCheckForTransition(initialPoint, currTransition){
     tmpList = adjList.getList(initialPoint);
+    console.log("Init point type: " + typeof(initialPoint));
     console.log("Init point list: " + tmpList);
     for(let i = 0; i < tmpList.length; i++){
         tmpTransitionsList = tmpList[i][1];
@@ -173,8 +175,34 @@ function determinismCheckForTransition(initialPoint, currTransition){
 }
 
 // This checks if the state diagram is in a deterministic form before processing the input
+// This is more of a "completeness" check; checks if the whole alphabet is actually used for each state or not
 function determinismCheckForInput(){
-
+    console.log("det check");
+    for(let c = 0; c < circles.length; c++){
+        tmpList = adjList.getList(c);
+        console.log(tmpList);
+        if(tmpList === undefined || tmpList === null){
+            return false;
+        }
+        else{
+            for(let i = 0; i < alphabetArray.length; i++){
+                let complete = false;
+                for(let j = 0; j < tmpList.length; j++){
+                    tmpTransitionsList = tmpList[j][1];
+                    for(let k = 0; k < tmpTransitionsList.length; k++){
+                        if(alphabetArray[i] === tmpTransitionsList[k]){
+                            complete = true;
+                            break;
+                        }
+                    }
+                    if(complete === false){
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+    return true;
 }
 
 
@@ -315,24 +343,30 @@ document.getElementById('String').onclick = function () {
         document.getElementById("input").innerHTML = "Input: (empty)";
     }
     else {
-        // Show the input string on the page
-        document.getElementById("input").innerHTML = "input: " + inputString;
-        //This block of code checks to see if the string contains characters only in the alphabet
-        let valid = true;
-        for(var i = 0; i < inputString.length; i++){
-            if (alphabetArray.indexOf(inputString[i]) === -1) {
-                alert("String contains symbols not in the alphabet"); // If a character is not found in the charArray, return false
-                valid = false;
-                console.log(valid);
-                break;
+        if(determinismCheckForInput() === false){
+            console.log("Determinism check for input");
+            alert("Not all symbols in the alphabet were used for each state; violates determinism rule");
+        }
+        else{
+            // Show the input string on the page
+            document.getElementById("input").innerHTML = "input: " + inputString;
+            //This block of code checks to see if the string contains characters only in the alphabet
+            let valid = true;
+            for(var i = 0; i < inputString.length; i++){
+                if (alphabetArray.indexOf(inputString[i]) === -1) {
+                    alert("String contains symbols not in the alphabet"); // If a character is not found in the charArray, return false
+                    valid = false;
+                    console.log(valid);
+                    break;
+                }
             }
-        }
-        //If a valid input has been entered and if a start state has been defined, then read the input
-        if(valid === true && start !== null){
-            readString(inputString);
-        }
-        if(start === null){
-            alert("No start state has been defined.");
+            //If a valid input has been entered and if a start state has been defined, then read the input
+            if(valid === true && start !== null){
+                readString(inputString);
+            }
+            if(start === null){
+                alert("No start state has been defined.");
+            }
         }
     }
 }
