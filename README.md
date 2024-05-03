@@ -10,7 +10,9 @@ Our goal for this project was to create a Finite Automata designer that would al
 
 ### Limitations:
 - This was only made for Deterministic Finite Automata. Non-determinism was beginning to get too complicated, and building the program for DFAs turned out to be a cumbersome endeavor on its own.
-- We were not able to implement a feature that allows the user to step through the DFA state-by-state to see how the machine actually parses an input string.
+- We were not able to implement a feature that allows the user to step through the DFA state-by-state to see how the machine actually parses an input string. I.E. There is no nice animation that shows the progress of the string as it is being read symbol by symbol.
+- Arrows between two states that lead back to one another became cumbersome to draw given the limitations of the library. They will still display and lines will be drawn, however the arrow heads are disfunctional and won't give a clear picture unfortunately.
 
-### Libraries
+
+### Libraries:
  + P5.js
