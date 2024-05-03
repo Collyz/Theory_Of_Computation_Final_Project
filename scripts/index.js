@@ -116,9 +116,18 @@ function mousePressed(){
                 lines[i].transition = [];
                 currTransitions = weight.split(",");
                 lines[i].text = weight;
+                initialPoint = lines[i].c1;
+                terminalPoint = lines[i].c2;
                 for(var j = 0; j < currTransitions.length; j++){
                     if (alphabetArray.indexOf(currTransitions[j]) === -1) {
                         alert("Transition contains symbols not in the alphabet"); // If a character is not found in the charArray, return false
+                        lines[i].text = "";
+                        lines[i].transition = [];
+                        break;
+                    }
+                    if(determinismCheckForTransition(initialPoint, terminalPoint, currTransitions[j]) === false){
+                        console.log("determinism check");
+                        alert("Transition already exists; violates determinism rule"); // If a character is not found in the charArray, return false
                         lines[i].text = "";
                         lines[i].transition = [];
                         break;
@@ -145,6 +154,66 @@ function mousePressed(){
        
     }
 }
+
+// This checks if the transition that the user adds violates the determinism rule or not
+// This is more of a "correctness" check
+function determinismCheckForTransition(initialPoint, terminalPoint, currTransition){
+    tmpList = adjList.getList(initialPoint);
+    console.log("Init point type: " + typeof(initialPoint));
+    console.log("Init point list: " + tmpList);
+    for(let i = 0; i < tmpList.length; i++){
+        tmpTransitionsList = tmpList[i][1];
+        console.log("TmpTransitionsList: " + tmpTransitionsList);
+        console.log("Curr Trans: " + currTransition)
+        for(let j = 0; j < tmpTransitionsList.length; j++){
+            console.log("tmpTransitionsList[j]: " + tmpTransitionsList[j]);
+            if(currTransition === tmpTransitionsList[j] && terminalPoint != tmpList[i][0]){
+                console.log("initial point: " + initialPoint + ", curr point: " + tmpList[i][0]);
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+// This checks if the state diagram is in a deterministic form before processing the input
+// This is more of a "completeness" check; checks if the whole alphabet is actually used for each state or not
+function determinismCheckForInput(){
+    console.log("det check");
+    for(let c = 0; c < circles.length; c++){
+        tmpList = adjList.getList(c);
+        console.log(tmpList);
+        // If the list for a specific node doesn't exist, then it automatically violates determinism
+        if(tmpList === undefined || tmpList === null){
+            return false;
+        }
+        else{
+            for(let i = 0; i < alphabetArray.length; i++){
+                let complete = false;
+                for(let j = 0; j < tmpList.length; j++){
+                    tmpTransitionsList = tmpList[j][1];
+                    for(let k = 0; k < tmpTransitionsList.length; k++){
+                        if(alphabetArray[i] === tmpTransitionsList[k]){
+                            complete = true;
+                            break;
+                        }
+                    }
+                    
+                }
+                if(complete === false){
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+
+
+
+
+
+
 
 // On mouse released
 function mouseReleased(){
@@ -192,9 +261,65 @@ window.addEventListener("click", function(e){
     if(e.shiftKey){
         if(currCirc !== null){
             if(currCirc !== null && prevCirc !== null){
-                lines.push(new Arrow(prevCirc, currCirc));
-                //A new Adj List is created every time that a new line is added
-                generateAdjList();
+                if(adjList !== null){
+                    // console.log(prevCirc);
+                    console.log(adjList);
+                    tmpList = adjList.getList(prevCirc);
+                    console.log(tmpList);
+                    if(tmpList !== undefined){
+                        prevCircList = [];
+                        for(let i = 0; i < tmpList.length; i++){
+                            prevCircList.push(tmpList[i][0]);
+                        }
+                    }
+                    else{
+                        prevCircList = undefined;
+                    }
+                    console.log("Prevlist" + prevCircList);
+                    if(prevCircList !== undefined && prevCircList.indexOf(currCirc) !== -1){
+                        console.log(prevCirc);
+                        alert("This line already exists");
+                    }
+                    else{
+                        //We will check if the backwards line exists to determine how to draw the lines between two states later on
+                        //Ex: If a line from A -> B exists, and we want to make a line for B -> A, then there will need to be some changes made here
+                        
+                        tmpList2 = adjList.getList(currCirc);
+                        //Checks if any lines for the terminal vertex already exist
+                        if(tmpList2 !== undefined){
+                            currCircList = [];
+                            for(let i = 0; i < tmpList2.length; i++){
+                                currCircList.push(tmpList2[i][0]);
+                            }
+                            //Checks among the lines of the terminal vertex and looks to see if a line in the opposite direction exists
+                            if(currCircList.indexOf(prevCirc) !== -1){
+                                prevCircIndex = currCircList.indexOf(prevCirc);
+                                aboveLineIndex = tmpList2[prevCircIndex][2];
+                                aboveLine = lines[aboveLineIndex];
+                                aboveLine.above = true;
+                                belowLine = new Arrow(prevCirc, currCirc);
+                                belowLine.below = true;
+                                lines.push(belowLine);
+                            }
+                            else{
+                                lines.push(new Arrow(prevCirc, currCirc));
+                            }
+                        }
+                        else{
+                            lines.push(new Arrow(prevCirc, currCirc));
+                        }
+                        //A new Adj List is created every time that a new line is added
+                        generateAdjList();
+                    }
+                }
+                //This will execute when an no states exist yet, which also means no adj list has been initialized either
+                else{
+                    
+                    lines.push(new Arrow(prevCirc, currCirc));
+                    console.log(lines[lines.length - 1].aboveLine + " and " + lines[lines.length - 1].belowLine);
+                    //A new Adj List is created every time that a new line is added
+                    generateAdjList();
+                }
             }
         }
     }
@@ -224,24 +349,30 @@ document.getElementById('String').onclick = function () {
         document.getElementById("input").innerHTML = "Input: (empty)";
     }
     else {
-        // Show the input string on the page
-        document.getElementById("input").innerHTML = "input: " + inputString;
-        //This block of code checks to see if the string contains characters only in the alphabet
-        let valid = true;
-        for(var i = 0; i < inputString.length; i++){
-            if (alphabetArray.indexOf(inputString[i]) === -1) {
-                alert("String contains symbols not in the alphabet"); // If a character is not found in the charArray, return false
-                valid = false;
-                console.log(valid);
-                break;
+        if(determinismCheckForInput() === false){
+            console.log("Determinism check for input");
+            alert("Not all symbols in the alphabet were used for each state; violates determinism rule");
+        }
+        else{
+            // Show the input string on the page
+            document.getElementById("input").innerHTML = "input: " + inputString;
+            //This block of code checks to see if the string contains characters only in the alphabet
+            let valid = true;
+            for(var i = 0; i < inputString.length; i++){
+                if (alphabetArray.indexOf(inputString[i]) === -1) {
+                    alert("String contains symbols not in the alphabet"); // If a character is not found in the charArray, return false
+                    valid = false;
+                    console.log(valid);
+                    break;
+                }
             }
-        }
-        //If a valid input has been entered and if a start state has been defined, then read the input
-        if(valid === true && start !== null){
-            readString(inputString);
-        }
-        if(start === null){
-            alert("No start state has been defined.");
+            //If a valid input has been entered and if a start state has been defined, then read the input
+            if(valid === true && start !== null){
+                readString(inputString);
+            }
+            if(start === null){
+                alert("No start state has been defined.");
+            }
         }
     }
 }
@@ -327,9 +458,9 @@ ondblclick = (event) => {
 
 function generateAdjList(){
     adjList = new AdjList();
-    for(let line of lines){
+    for(let i = 0; i < lines.length; i++){
         
-        adjList.addToAdjList(line.c1, line.c2, line.getTransition());
+        adjList.addToAdjList(lines[i].c1, lines[i].c2, lines[i].getTransition(), i);
     }
     //This is used to just keep track of the adj list changes by printing to console
     
@@ -390,6 +521,8 @@ class Arrow {
         this.x2 = null;
         this.y1 = null;
         this.y2 = null;
+        this.above = null;
+        this.below = null;
     }
 
     isMouseOnLine() {
@@ -399,7 +532,7 @@ class Arrow {
         let lineLength = dist(this.x1, this.y1, this.x2, this.y2);
         if(this.c1 !== this.c2){
             // Check if mouse click is close enough to the line
-            if (d + d2 <= lineLength + 5) { // Add a small tolerance
+            if (d + d2 <= lineLength + 2) { // Add a small tolerance
                 return true;
             }
             return false;
@@ -434,6 +567,16 @@ class Arrow {
         }
     }
 
+    // //Set the line to be above if there are two lines going both ways
+    // setAboveLineStatus(){
+    //     this.
+    // }
+
+    // //Set the line to be below if there are two lines going both ways
+    // setBelowLineStatus(){
+
+    // }
+
     display(){
         if(this.c1 === this.c2){
             let centerX = circles[this.c1].x;
@@ -465,7 +608,8 @@ class Arrow {
             // Draw the triangle
             triangle(triangleX1, triangleY1, triangleX2, triangleY2, triangleX3, triangleY3);
             text(this.text, triangleX1 - 10, triangleY1 - 20);
-        }else{
+        }
+        else{
             // Calculate distances and ratios for offsetting the long line between circles so that they do not overlap with the circle
             let d = dist(circles[this.c1].x, circles[this.c1].y, circles[this.c2].x, circles[this.c2].y);
             let r1 = circles[this.c1].r;
@@ -531,6 +675,28 @@ class Arrow {
             // Use perpStartX and perpStartY to define 'left' vertex of triangle
             // Middle of triangle is the point that touches the second circle (x2, y2)
             // End point of triangle is perpEndX, perpEndY
+
+            if(this.above === true){
+                perpStartY = perpStartY - 10;
+                perpEndY = perpEndY - 10;
+                perpStartX = perpStartX - 10;
+                perpEndX = perpEndX - 10;
+                y1 = y1 - 10;
+                y3 = y3 - 10;
+                x1 = x1 - 10;
+                x3 = x3 - 10;
+            }
+            else if(this.below === true){
+                perpStartY = perpStartY + 10;
+                perpEndY = perpEndY + 10;
+                perpStartX = perpStartX + 10;
+                perpEndX = perpEndX + 10;
+                y1 = y1 + 10;
+                y3 = y3 + 10;
+                x1 = x1 + 10;
+                x3 = x3 + 10;
+            }
+
             triangle(perpStartX, perpStartY, x2, y2, perpEndX, perpEndY);
 
             // Line from first circle to point that is 5 pixels away from second circle (x3, y3) (This is so the line does not go through the arrow)
@@ -556,7 +722,7 @@ class AdjList{
     }
     
     //Adds a node to a specific list within the Adj List
-    addToAdjList(node, newNode, transition){
+    addToAdjList(node, newNode, transition, lineIndex){
         //Create a new list for that specific node if it doesn't exist in the Adj List
         if(this.adjList[node] == null){
             // console.log(typeof(node));
@@ -564,10 +730,11 @@ class AdjList{
         }
         if(this.adjList[node].indexOf(newNode) === -1){
             // console.log(typeof(this.adjList[node]));
-            let pair = [];
-            pair.push(newNode);
-            pair.push(transition);
-            this.adjList[node].push(pair);
+            let triple = [];
+            triple.push(newNode);
+            triple.push(transition);
+            triple.push(lineIndex);
+            this.adjList[node].push(triple);
         }
     }
 
