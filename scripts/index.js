@@ -17,6 +17,8 @@ let currLine = null;
 let alphabetArray = ['0','1'];
 // Hold the string
 let inputString = "";
+// Last purple for last state that was accepted
+let currPurp = null;
 
 // P5 canvas setup
 function setup() {
@@ -223,12 +225,6 @@ function determinismCheckForInput(){
     }
     return true;
 }
-
-
-
-
-
-
 
 // On mouse released
 function mouseReleased(){
@@ -438,6 +434,14 @@ function readString(string){
     }
     else{
         alert("This string is rejected");
+    }
+    if(currPurp === null){
+        circles[currState].color = "purple";
+        currPurp = currState;
+    }else{
+        circles[currPurp].color = "black";
+        currPurp = currState;
+        circles[currState].color = "purple";
     }
     circles[currState].color = "purple";
 }
