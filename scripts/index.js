@@ -223,11 +223,11 @@ document.getElementById('String').onclick = function () {
     if (inputString == null || inputString == "") {
         alert("No String Entered.");
         inputString = "";
-        document.getElementById("input").innerHTML = "input: (empty)";
+        document.getElementById("input").innerHTML = "Input: (empty)";
     }
     else {
         // Show the input string on the page
-        document.getElementById("input").innerHTML = "input: "+ inputString;
+        document.getElementById("input").innerHTML = "input: " + inputString;
         //This block of code checks to see if the string contains characters only in the alphabet
         let valid = true;
         for(var i = 0; i < inputString.length; i++){
